@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "969512772727",
+    "project_id": "flutter-shopping-list-4d82e",
+    "storage_bucket": "flutter-shopping-list-4d82e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:969512772727:android:c038eb90960fdcf3fb1272",
+        "android_client_info": {
+          "package_name": "id.hazulifidastian.shopping_list_riverpod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "969512772727-4jnqs3ddcdsqtkmu3ir78ct69ft540i0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcHeOo9lRtlKCf6ODGkm5g2MX7DiLHSPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "969512772727-4jnqs3ddcdsqtkmu3ir78ct69ft540i0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
