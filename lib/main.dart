@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shopping_list_riverpod/controllers/auth_controller.dart';
 import 'package:shopping_list_riverpod/controllers/item_list_controller.dart';
 import 'package:shopping_list_riverpod/models/item_model.dart';
+import 'package:shopping_list_riverpod/repositories/custom_exception.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +39,19 @@ class HomeScreen extends HookWidget {
                 icon: const Icon(Icons.logout),
                 onPressed: () => context.read(authControllerProvider).signOut())
             : null,
+      ),
+      body: ProviderListener(
+        provider: itemListExceptionProvider,
+        onChange: (
+          BuildContext context,
+          StateController<CustomException?> customException,
+        ) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(customException.state!.message!),
+          ));
+        },
+        child: const ItemList(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => AddItemDialog.show(context, Item.empty()),
@@ -102,6 +116,65 @@ class AddItemDialog extends HookWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ItemList extends HookWidget {
+  const ItemList({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final itemListState = useProvider(itemListControllerProvider.state!);
+    return itemListState.when(
+      data: (items) => items.isEmpty
+          ? const Center(
+              child: Text(
+                'Tap + to add an item',
+                style: TextStyle(fontSize: 20.0),
+              ),
+            )
+          : ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (BuildContext context, int index) {
+                final item = items[index];
+                return Container();
+              }),
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (error, _) => ItemListError(
+        message:
+            error is CustomException ? error.message! : 'Something when wrong!',
+      ),
+    );
+  }
+}
+
+class ItemListError extends StatelessWidget {
+  final String message;
+
+  const ItemListError({Key? key, required this.message}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            message,
+            style: const TextStyle(fontSize: 20.0),
+          ),
+          const SizedBox(height: 20.0),
+          ElevatedButton(
+            onPressed: () => context
+                .read(itemListControllerProvider)
+                .retrieveItems(isRefreshing: true),
+            child: const Text('Retry'),
+          ),
+        ],
       ),
     );
   }
