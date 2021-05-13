@@ -31,6 +31,9 @@ class HomeScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final authControllerState = useProvider(authControllerProvider.state);
+    final itemListFilter = useProvider(itemListFilterProvider);
+    final isObtainedFilter = itemListFilter.state == ItemListFilter.obtained;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping List'),
@@ -39,6 +42,15 @@ class HomeScreen extends HookWidget {
                 icon: const Icon(Icons.logout),
                 onPressed: () => context.read(authControllerProvider).signOut())
             : null,
+        actions: [
+          IconButton(
+              icon: Icon(isObtainedFilter
+                  ? Icons.check_circle
+                  : Icons.check_circle_outline),
+              onPressed: () => itemListFilter.state = isObtainedFilter
+                  ? ItemListFilter.all
+                  : ItemListFilter.obtained),
+        ],
       ),
       body: ProviderListener(
         provider: itemListExceptionProvider,
@@ -129,6 +141,7 @@ class ItemList extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final itemListState = useProvider(itemListControllerProvider.state);
+    final filteredItemList = useProvider(filteredItemListProvider);
     return itemListState.when(
       data: (items) => items.isEmpty
           ? const Center(
@@ -138,9 +151,9 @@ class ItemList extends HookWidget {
               ),
             )
           : ListView.builder(
-              itemCount: items.length,
+              itemCount: filteredItemList.length,
               itemBuilder: (BuildContext context, int index) {
-                final item = items[index];
+                final item = filteredItemList[index];
                 return ProviderScope(
                   overrides: [currentItem.overrideWithValue(item)],
                   child: const ItemTile(),

@@ -4,6 +4,30 @@ import 'package:shopping_list_riverpod/models/item_model.dart';
 import 'package:shopping_list_riverpod/repositories/custom_exception.dart';
 import 'package:shopping_list_riverpod/repositories/item_repository.dart';
 
+enum ItemListFilter {
+  all,
+  obtained,
+}
+
+final itemListFilterProvider =
+    StateProvider<ItemListFilter>((_) => ItemListFilter.all);
+
+final filteredItemListProvider = Provider<List<Item>>((ref) {
+  final itemListFilterState = ref.watch(itemListFilterProvider).state;
+  final itemListState = ref.watch(itemListControllerProvider.state);
+  return itemListState.maybeWhen(
+    data: (items) {
+      switch (itemListFilterState) {
+        case ItemListFilter.obtained:
+          return items.where((item) => item.obtained).toList();
+        default:
+          return items;
+      }
+    },
+    orElse: () => [],
+  );
+});
+
 final itemListExceptionProvider = StateProvider<CustomException?>((_) => null);
 
 final itemListControllerProvider =
