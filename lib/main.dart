@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Shopping List',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -121,6 +121,8 @@ class AddItemDialog extends HookWidget {
   }
 }
 
+final currentItem = ScopedProvider<Item>((_) => throw UnimplementedError());
+
 class ItemList extends HookWidget {
   const ItemList({Key? key}) : super(key: key);
 
@@ -139,8 +141,12 @@ class ItemList extends HookWidget {
               itemCount: items.length,
               itemBuilder: (BuildContext context, int index) {
                 final item = items[index];
-                return Container();
-              }),
+                return ProviderScope(
+                  overrides: [currentItem.overrideWithValue(item)],
+                  child: const ItemTile(),
+                );
+              },
+            ),
       loading: () => const Center(
         child: CircularProgressIndicator(),
       ),
@@ -176,6 +182,28 @@ class ItemListError extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class ItemTile extends HookWidget {
+  const ItemTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final item = useProvider(currentItem);
+    return ListTile(
+      key: ValueKey(item.id),
+      title: Text(item.name),
+      trailing: Checkbox(
+        value: item.obtained,
+        onChanged: (val) => context.read(itemListControllerProvider).updateItem(
+              updatedItem: item.copyWith(obtained: !item.obtained),
+            ),
+      ),
+      onTap: () => AddItemDialog.show(context, item),
+      onLongPress: () =>
+          context.read(itemListControllerProvider).deleteItem(itemId: item.id!),
     );
   }
 }
