@@ -126,7 +126,7 @@ class ItemList extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final itemListState = useProvider(itemListControllerProvider.state!);
+    final itemListState = useProvider(itemListControllerProvider.state);
     return itemListState.when(
       data: (items) => items.isEmpty
           ? const Center(
