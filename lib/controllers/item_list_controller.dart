@@ -60,10 +60,10 @@ class ItemListController extends StateNotifier<AsyncValue<List<Item>>> {
     }
   }
 
-  Future<void> deleteItem({required Item itemId}) async {
+  Future<void> deleteItem({required String itemId}) async {
     try {
       await _read(itemRepositoryProvider)
-          .deleteItem(userId: _userId!, item: itemId);
+          .deleteItem(userId: _userId!, itemId: itemId);
       state.whenData((items) => state =
           AsyncValue.data(items..removeWhere((item) => item.id == itemId)));
     } on CustomException catch (e) {

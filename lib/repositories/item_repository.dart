@@ -9,7 +9,7 @@ abstract class BaseItemRepository {
   Future<List<Item>> retrieveItems({required String userId});
   Future<String> createItem({required String userId, required Item item});
   Future<void> updateItem({required String userId, required Item item});
-  Future<void> deleteItem({required String userId, required Item item});
+  Future<void> deleteItem({required String userId, required String itemId});
 }
 
 final itemRepositoryProvider =
@@ -36,11 +36,12 @@ class ItemRepository implements BaseItemRepository {
   }
 
   @override
-  Future<void> deleteItem({required String userId, required Item item}) async {
+  Future<void> deleteItem(
+      {required String userId, required String itemId}) async {
     try {
       await _read(firebaseFirestoreProvider)
           .usersListRef(userId)
-          .doc(item.id)
+          .doc(itemId)
           .delete();
     } on FirebaseException catch (e) {
       throw CustomException(message: e.message);
